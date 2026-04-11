@@ -3,7 +3,6 @@
 
 ![GitHub License](https://img.shields.io/github/license/stanleyborges2/reactor_task?style=flat-square&color=blue)
 ![Arduino](https://img.shields.io/badge/Hardware-Arduino%20Uno-00979D?style=flat-square&logo=arduino&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Concluído-brightgreen?style=flat-square)
 
 O **Reactor Task** é um protótipo interativo de memória sequencial inspirado na tarefa homônima do jogo eletrônico *Among Us*. Desenvolvido como um sistema embarcado, o projeto utiliza a plataforma Arduino para criar um ambiente lúdico de estímulo à memória e coordenação motora para o público infantil (2 a 8 anos).
 
