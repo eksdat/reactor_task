@@ -45,7 +45,7 @@ O software foi desenvolvido em **Arduino C++**, utilizando:
 1.  **Pré-requisitos:** Ter a [Arduino IDE](https://www.arduino.cc/en/software) instalada.
 2.  **Download:** Clone este repositório ou baixe o arquivo `.ino`.
     ```bash
-    git clone [https://github.com/eksdat/reactor_task.git](https://github.com/eksdat/reactor_task.git)
+    git clone https://github.com/eksdat/reactor_task.git
     ```
 3.  **Configuração:** * Abra o arquivo `reactorcode.ino`.
     * Conecte seu **Arduino Uno**.
