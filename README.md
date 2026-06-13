@@ -1,63 +1,91 @@
-# 🚀 Reactor Task: Among Us (Arduino Edition)
-### *Engenharia de Software - Centro Universitário de Belo Horizonte (UniBH)*
+# Reactor Task | Jogo de Memória Sequencial em Arduino
 
-![GitHub License](https://img.shields.io/github/license/stanleyborges2/reactor_task?style=flat-square&color=blue)
-![Arduino](https://img.shields.io/badge/Hardware-Arduino%20Uno-00979D?style=flat-square&logo=arduino&logoColor=white)
+Sistema embarcado interativo que desafia a criança a memorizar e repetir sequências de luz e som. O objetivo é estimular **memória sequencial, atenção e coordenação motora fina** em crianças de 2 a 7 anos, de forma lúdica. A mecânica é inspirada na tarefa do reator do jogo *Among Us*.
 
-O **Reactor Task** é um protótipo interativo de memória sequencial inspirado na tarefa homônima do jogo eletrônico *Among Us*. Desenvolvido como um sistema embarcado, o projeto utiliza a plataforma Arduino para criar um ambiente lúdico de estímulo à memória e coordenação motora para o público infantil (2 a 8 anos).
+Projeto desenvolvido na disciplina de Sistemas Computacionais do curso de Engenharia de Software (UniBH). Foi apresentado no II Simpósio Nacional de Engenharia do Ecossistema Ânima e resultou em **publicação científica** (veja abaixo).
 
----
-
-## 📌 Visão Geral do Projeto
-
-O sistema simula o desafio de memorização do jogo original:
-1.  **Exibição:** O painel de LEDs verdes mostra uma sequência aleatória em uma grade 3x3.
-2.  **Interação:** O jogador deve repetir a sequência pressionando os botões na mesma ordem.
-3.  **Progressão:** São 5 rodadas de dificuldade crescente, indicadas por LEDs de progresso amarelos.
-4.  **Feedback:** O buzzer emite sons distintos para acertos, erros e para a animação de vitória.
+![Plataforma](https://img.shields.io/badge/Arduino-Uno-00979D)
+![Linguagem](https://img.shields.io/badge/Firmware-C%2B%2B-blue)
+![Licença](https://img.shields.io/badge/Licença-MIT-green)
 
 ---
 
-## Especificações Técnicas
+## Publicação
 
-### 1. Hardware e Pinagem
+Este projeto foi documentado e publicado como artigo científico:
 
-| Componente | Quantidade | Pinos (Digital/Analog) |
-| :--- | :---: | :--- |
-| **LEDs Verdes** (Grade 3x3) | 9 | `D2` a `D10` |
-| **Push Buttons** | 9 | `D11`, `D12`, `A0`, `A1`, `A2`, `A3`, `A4`, `A5`, `D0` |
-| **Piezo Buzzer** | 1 | `D13` |
-| **Resistores** | 14 | $220\Omega$ |
-
-> [!CAUTION]
-> **Atenção:** O pino `D0` (RX) é compartilhado com a comunicação Serial. Se encontrar erros ao carregar o código (Upload), desconecte o botão ligado a este pino temporariamente.
-
-### 2. Lógica de Programação
-O software foi desenvolvido em **Arduino C++**, utilizando:
-* **Controle de Estados:** Gerenciamento de rodadas e passos da sequência.
-* **Debounce Simples:** Garantia de que um clique no botão seja lido apenas uma vez.
-* **Randomização:** Uso de `randomSeed(analogRead(A6))` para gerar sequências imprevisíveis a cada reinicialização.
+> **Jogo de memória sequencial: Desenvolvimento de protótipo de jogo interativo infantil com Arduino.**
+> *Research, Society and Development*, v. 15, n. 6, 2026.
+> DOI: [10.33448/rsd-v15i6.51189](https://doi.org/10.33448/rsd-v15i6.51189)
 
 ---
 
-## Como Instalar e Rodar
+## Como funciona o jogo
 
-1.  **Pré-requisitos:** Ter a [Arduino IDE](https://www.arduino.cc/en/software) instalada.
-2.  **Download:** Clone este repositório ou baixe o arquivo `.ino`.
-    ```bash
-    git clone https://github.com/eksdat/reactor_task.git
-    ```
-3.  **Configuração:** * Abra o arquivo `reactorcode.ino`.
-    * Conecte seu **Arduino Uno**.
-    * Vá em `Ferramentas > Placa` e selecione **Arduino Uno**.
-    * Clique em **Carregar** (Seta para a direita).
+1. O dispositivo acende uma **sequência de LEDs verdes** (acompanhada de som), começando curta.
+2. A criança precisa **repetir a sequência** apertando os botões na mesma ordem.
+3. Acertou a sequência inteira? Avança de nível — a próxima sequência fica um pouco maior.
+4. Os **5 LEDs amarelos** funcionam como uma barra de nível: mostram em qual das 5 fases progressivas a criança está.
+5. Errou um botão? A rodada reinicia, com retorno sonoro indicando o erro.
 
 ---
 
-## Contexto Acadêmico
+## Hardware
 
-Este projeto integra a **Avaliação A3** da disciplina de **Sistemas Automatizados / Sistemas Computacionais**.
+O circuito é montado sobre uma **Arduino Uno**. Componentes principais:
+
+- **Matriz 3x3 de LEDs verdes** — exibe a sequência a ser memorizada.
+- **Grade 3x3 de botões** — entrada da criança, cada botão correspondendo a um LED.
+- **Barra de 5 LEDs amarelos** — indicador de nível/progresso.
+- **Buzzer** — retorno sonoro para cada passo e para acerto/erro.
+- Resistores e jumpers.
+
+O esquema completo de ligação está em [`Vista_Esquemática.pdf`](Vista_Esquemática.pdf).
+
+---
+
+## Por dentro do código
+
+A parte mais interessante da implementação:
+
+- **A sequência é um array de posições.** Cada elemento representa qual LED (de 1 a 9) deve acender. Ex.: `{4, 1, 7, 2}`.
+- **A verificação é feita posição por posição.** A cada botão apertado, o firmware compara o índice atual da entrada da criança com o índice correspondente do array da sequência. Se bater até o fim, a rodada é vencida; se divergir em qualquer ponto, reinicia.
+- **A aleatoriedade vem do hardware.** Para gerar sequências imprevisíveis, o pino analógico **A6** é deixado desconectado (flutuante) e seu ruído elétrico é usado como semente:
+  ```cpp
+  randomSeed(analogRead(A6));
+  ```
+  Um pino sem nada ligado capta interferência ambiente, o que serve como fonte de entropia para `random()`. Sem isso, o Arduino geraria sempre a mesma sequência a cada ligada.
+
+---
+
+## Estrutura do repositório
+
+```
+reactor_task/
+├── reactorcode.ino        firmware principal (sketch Arduino)
+├── reactorcode.cpp        lógica do jogo
+├── Vista_Esquemática.pdf  esquema de montagem do circuito
+├── LICENSE                licença MIT
+└── README.md
+```
+
+---
+
+## Como rodar
+
+1. Instale a [Arduino IDE](https://www.arduino.cc/en/software).
+2. Clone o repositório:
+   ```bash
+   git clone https://github.com/eksdat/reactor_task.git
+   ```
+3. Abra `reactorcode.ino` na Arduino IDE.
+4. Monte o circuito seguindo o `Vista_Esquemática.pdf`.
+5. Selecione a placa **Arduino Uno** e a porta correta, e clique em **Upload**.
+
+---
+
+Projeto desenvolvido em equipe; a lista completa de autores está na publicação.
 
 ## Licença
 
-Este projeto está licenciado sob a **MIT License** - consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+Distribuído sob a licença MIT. Veja [LICENSE](LICENSE).
